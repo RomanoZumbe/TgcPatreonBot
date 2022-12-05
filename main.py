@@ -27,28 +27,27 @@ def handle_message(update, context):
     for receiver in messageReceivers:
         update.message.copy(receiver.id)
 
-def handle_documents(update, context):
+async def handle_documents(update, context):
     msg = update.message
     print(f"Download of {msg.document.file_name} started")
-    msg.document.get_file().download_to_drive()
+    await msg.document.get_file().download_to_drive()
     
 
 def error(update, context):
     print(f"Update {update} caused error {context.error}")
 
 def main():
-    updater = Updater(keys.API_KEY, use_context=True, base_url="http://192.168.43.53:8081/bot")
+    application = Application.builder().token(keys.API_KEY).build()
+    # updater = Updater(keys.API_KEY, use_context=True, base_url="http://192.168.43.53:8081/bot")
     # updater.bot.logOut();
-    dp = updater.dispatcher
 
-    dp.add_handler(CommandHandler("start", start_command))
-    dp.add_handler(CommandHandler("help", help_command))
-    dp.add_handler(CommandHandler("addMe", addReceiver_command))
-    dp.add_handler(CommandHandler("getReceivers", getReceivers_command))
-    # dp.add_handler(MessageHandler(Filters.all, handle_message))
-    dp.add_handler(MessageHandler(Filters.document, handle_documents))
-    dp.add_error_handler(error)
-    updater.start_polling()
-    updater.idle()
+    application.add_handler(CommandHandler("start", start_command))
+    application.add_handler(CommandHandler("help", help_command))
+    application.add_handler(CommandHandler("addMe", addReceiver_command))
+    application.add_handler(CommandHandler("getReceivers", getReceivers_command))
+    # application.add_handler(MessageHandler(Filters.all, handle_message))
+    application.add_handler(MessageHandler(filters.Document, handle_documents))
+    application.add_error_handler(error)
 
+    application.run_polling()
 main()
