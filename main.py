@@ -33,8 +33,9 @@ async def handle_documents(update: Update, context: CallbackContext):
     print(file)
     old_name = file.file_path
     new_name = os.path.dirname(os.path.abspath(old_name)) + "/" + msg.document.file_name
+    new_name_esc = os.path.dirname(os.path.abspath(old_name)) + "/\"" + msg.document.file_name + "\""
     os.rename(old_name, new_name)
-    bashCommand = f"unrar x \"{new_name}\""
+    bashCommand = f"unrar x {new_name_esc}"
     print(bashCommand)
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
